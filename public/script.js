@@ -26,14 +26,43 @@ form.addEventListener("submit", (e) => {
   }
 });
 
-// Receive message
-socket.on("chat message", (msgData) => {
+// Helper to render a message
+function renderMessage(msgData) {
   const li = document.createElement("li");
   li.classList.add(msgData.user === username ? "my-message" : "other-message");
-
   li.innerHTML = `<span class="msg-text">${msgData.text}</span>
                   <span class="msg-meta">${msgData.user} • ${msgData.time}</span>`;
-
   messages.appendChild(li);
   messages.scrollTop = messages.scrollHeight;
+}
+
+// Load messages from localStorage on page load
+function loadMessages() {
+  const saved = localStorage.getItem("chatMessages");
+  if (saved) {
+    try {
+      const arr = JSON.parse(saved);
+      arr.forEach(renderMessage);
+    } catch {}
+  }
+}
+loadMessages();
+
+// Save message to localStorage
+function saveMessage(msgData) {
+  let arr = [];
+  const saved = localStorage.getItem("chatMessages");
+  if (saved) {
+    try {
+      arr = JSON.parse(saved);
+    } catch {}
+  }
+  arr.push(msgData);
+  localStorage.setItem("chatMessages", JSON.stringify(arr));
+}
+
+// Receive message
+socket.on("chat message", (msgData) => {
+  renderMessage(msgData);
+  saveMessage(msgData);
 });
