@@ -51,7 +51,7 @@ io.on("connection", (socket) => {
     io.emit("chat message", msgData);
   });
 
-  // ✅ Handle delete message INSIDE here
+  // Handle delete message INSIDE here
   socket.on("delete message", (msgId) => {
     messages = messages.filter(m => m.id !== msgId);
     saveMessages();
